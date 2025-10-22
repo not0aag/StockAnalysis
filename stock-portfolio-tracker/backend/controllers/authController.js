@@ -23,20 +23,20 @@ const register = async (req, res) => {
   try {
     // Validate inputs
     if (!validateUsername(username)) {
-      return res.status(400).json({ 
-        error: "Username must be between 3 and 50 characters" 
+      return res.status(400).json({
+        error: "Username must be between 3 and 50 characters",
       });
     }
 
     if (!validateEmail(email)) {
-      return res.status(400).json({ 
-        error: "Please provide a valid email address" 
+      return res.status(400).json({
+        error: "Please provide a valid email address",
       });
     }
 
     if (!validatePassword(password)) {
-      return res.status(400).json({ 
-        error: "Password must be at least 6 characters long" 
+      return res.status(400).json({
+        error: "Password must be at least 6 characters long",
       });
     }
 
@@ -47,11 +47,10 @@ const register = async (req, res) => {
     );
 
     if (userExists.rows.length > 0) {
-      const existingField = userExists.rows[0].email === email.toLowerCase() 
-        ? "Email" 
-        : "Username";
-      return res.status(400).json({ 
-        error: `${existingField} already exists` 
+      const existingField =
+        userExists.rows[0].email === email.toLowerCase() ? "Email" : "Username";
+      return res.status(400).json({
+        error: `${existingField} already exists`,
       });
     }
 
@@ -100,16 +99,15 @@ const login = async (req, res) => {
   try {
     // Validate inputs
     if (!email || !password) {
-      return res.status(400).json({ 
-        error: "Email and password are required" 
+      return res.status(400).json({
+        error: "Email and password are required",
       });
     }
 
     // Check if user exists
-    const user = await pool.query(
-      "SELECT * FROM users WHERE email = $1", 
-      [email.toLowerCase()]
-    );
+    const user = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email.toLowerCase(),
+    ]);
 
     if (user.rows.length === 0) {
       return res.status(401).json({ error: "Invalid credentials" });

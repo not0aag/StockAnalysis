@@ -14,6 +14,7 @@ A modern, full-stack web application for tracking your stock portfolio with real
 ## 🛠 Tech Stack
 
 ### Backend
+
 - **Runtime:** Node.js with Express
 - **Database:** PostgreSQL with connection pooling
 - **Authentication:** JWT with bcrypt password hashing
@@ -21,6 +22,7 @@ A modern, full-stack web application for tracking your stock portfolio with real
 - **Security:** CORS, input validation, error handling
 
 ### Frontend
+
 - **Framework:** React 19
 - **State Management:** Redux Toolkit
 - **UI Library:** Material-UI (MUI)
@@ -61,6 +63,7 @@ stock-portfolio-tracker/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - PostgreSQL 13+
 
@@ -118,6 +121,7 @@ Base URL: `http://localhost:5000/api`
 ### Authentication
 
 **Register**
+
 ```
 POST /auth/register
 Body: { username, email, password }
@@ -125,6 +129,7 @@ Response: { token, user: { id, username, email } }
 ```
 
 **Login**
+
 ```
 POST /auth/login
 Body: { email, password }
@@ -132,6 +137,7 @@ Response: { token, user }
 ```
 
 **Get Profile** (requires auth)
+
 ```
 GET /auth/profile
 Headers: Authorization: Bearer <token>
@@ -141,6 +147,7 @@ Response: { id, username, email, created_at }
 ### Portfolio (All require authentication)
 
 **Get Portfolio**
+
 ```
 GET /portfolio
 Response: {
@@ -156,6 +163,7 @@ Response: {
 ```
 
 **Add Stock**
+
 ```
 POST /portfolio/stocks
 Body: { symbol, quantity, purchasePrice, purchaseDate }
@@ -163,12 +171,14 @@ Response: transaction object
 ```
 
 **Remove Stock**
+
 ```
 DELETE /portfolio/stocks/:id
 Response: { message: "Stock removed successfully" }
 ```
 
 **Get Performance**
+
 ```
 GET /portfolio/performance?period=1mo
 Query: period (1d, 1w, 1mo, 3mo, 6mo, 1y)
@@ -178,6 +188,7 @@ Response: { performance: [{ date, value }] }
 ### Stocks
 
 **Get Quote**
+
 ```
 GET /stocks/quote/:symbol
 Response: {
@@ -193,6 +204,7 @@ Response: {
 ```
 
 **Search Stocks**
+
 ```
 GET /stocks/search?query=AAPL
 Response: [{ symbol, name, exchange, type }]
@@ -201,16 +213,19 @@ Response: [{ symbol, name, exchange, type }]
 ## 🎨 Features in Detail
 
 ### Smart Caching
+
 - Stock prices are cached for 1 minute to reduce API calls
 - Automatic cache cleanup prevents memory leaks
 
 ### Input Validation
+
 - Email format validation
 - Password strength requirements (min 6 characters)
 - Username length validation (3-50 characters)
 - Transaction data validation (positive quantities, valid dates)
 
 ### Security Features
+
 - Bcrypt password hashing (12 salt rounds)
 - JWT token authentication with 30-day expiration
 - CORS protection with configurable origins
@@ -218,6 +233,7 @@ Response: [{ symbol, name, exchange, type }]
 - SQL injection prevention via parameterized queries
 
 ### Error Handling
+
 - Comprehensive error messages
 - Graceful degradation
 - Automatic token refresh on expiration
@@ -228,6 +244,7 @@ Response: [{ symbol, name, exchange, type }]
 See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for detailed deployment instructions.
 
 Quick deploy:
+
 ```bash
 npm i -g vercel
 vercel login
@@ -239,6 +256,7 @@ vercel
 The application automatically creates these tables on startup:
 
 ### users
+
 - `id` SERIAL PRIMARY KEY
 - `username` VARCHAR(50) UNIQUE NOT NULL
 - `email` VARCHAR(100) UNIQUE NOT NULL
@@ -246,6 +264,7 @@ The application automatically creates these tables on startup:
 - `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 ### portfolio
+
 - `user_id` INTEGER REFERENCES users(id)
 - `total_value` DECIMAL(15,2)
 - `total_gain_loss` DECIMAL(15,2)
@@ -253,6 +272,7 @@ The application automatically creates these tables on startup:
 - `updated_at` TIMESTAMP
 
 ### transactions
+
 - `id` SERIAL PRIMARY KEY
 - `user_id` INTEGER REFERENCES users(id)
 - `symbol` VARCHAR(10) NOT NULL

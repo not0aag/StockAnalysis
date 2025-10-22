@@ -97,28 +97,28 @@ const addStock = async (req, res) => {
   try {
     // Validate inputs
     if (!symbol || !quantity || !purchasePrice || !purchaseDate) {
-      return res.status(400).json({ 
-        error: "All fields are required" 
+      return res.status(400).json({
+        error: "All fields are required",
       });
     }
 
     if (quantity <= 0) {
-      return res.status(400).json({ 
-        error: "Quantity must be greater than 0" 
+      return res.status(400).json({
+        error: "Quantity must be greater than 0",
       });
     }
 
     if (purchasePrice <= 0) {
-      return res.status(400).json({ 
-        error: "Purchase price must be greater than 0" 
+      return res.status(400).json({
+        error: "Purchase price must be greater than 0",
       });
     }
 
     // Validate date
     const date = new Date(purchaseDate);
     if (isNaN(date.getTime()) || date > new Date()) {
-      return res.status(400).json({ 
-        error: "Invalid purchase date" 
+      return res.status(400).json({
+        error: "Invalid purchase date",
       });
     }
 
@@ -155,8 +155,8 @@ const addStock = async (req, res) => {
     res.status(201).json(transaction.rows[0]);
   } catch (error) {
     console.error("Add stock error:", error.message);
-    res.status(500).json({ 
-      error: error.message || "Failed to add stock" 
+    res.status(500).json({
+      error: error.message || "Failed to add stock",
     });
   }
 };
@@ -168,8 +168,8 @@ const removeStock = async (req, res) => {
   try {
     // Validate ID
     if (!id || isNaN(parseInt(id))) {
-      return res.status(400).json({ 
-        error: "Invalid transaction ID" 
+      return res.status(400).json({
+        error: "Invalid transaction ID",
       });
     }
 
@@ -180,8 +180,8 @@ const removeStock = async (req, res) => {
     );
 
     if (transaction.rows.length === 0) {
-      return res.status(404).json({ 
-        error: "Transaction not found or access denied" 
+      return res.status(404).json({
+        error: "Transaction not found or access denied",
       });
     }
 

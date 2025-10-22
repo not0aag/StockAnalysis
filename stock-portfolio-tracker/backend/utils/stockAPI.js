@@ -8,7 +8,7 @@ const CACHE_DURATION = 60000; // 1 minute
 const getStockPrice = async (symbol) => {
   try {
     const upperSymbol = symbol.toUpperCase();
-    
+
     // Check cache first
     const cached = priceCache.get(upperSymbol);
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
@@ -16,7 +16,7 @@ const getStockPrice = async (symbol) => {
     }
 
     const quote = await yahooFinance.quote(upperSymbol);
-    
+
     if (!quote || !quote.regularMarketPrice) {
       throw new Error(`No price data available for ${upperSymbol}`);
     }
@@ -37,7 +37,10 @@ const getStockPrice = async (symbol) => {
 
     return data;
   } catch (error) {
-    console.error(`❌ Error fetching stock price for ${symbol}:`, error.message);
+    console.error(
+      `❌ Error fetching stock price for ${symbol}:`,
+      error.message
+    );
     throw new Error(`Unable to fetch stock data for ${symbol}`);
   }
 };
@@ -92,7 +95,10 @@ const getHistoricalData = async (symbol, period = "1mo") => {
       volume: day.volume,
     }));
   } catch (error) {
-    console.error(`❌ Error fetching historical data for ${symbol}:`, error.message);
+    console.error(
+      `❌ Error fetching historical data for ${symbol}:`,
+      error.message
+    );
     throw new Error(`Unable to fetch historical data for ${symbol}`);
   }
 };
@@ -105,7 +111,7 @@ const searchStocks = async (query) => {
     }
 
     const results = await yahooFinance.search(query.trim());
-    
+
     if (!results || !results.quotes) {
       return [];
     }

@@ -2,9 +2,12 @@ const { Pool } = require("pg");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? {
-    rejectUnauthorized: false,
-  } : false,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? {
+          rejectUnauthorized: false,
+        }
+      : false,
   connectionTimeoutMillis: 10000,
   idleTimeoutMillis: 30000,
   max: 10,
@@ -12,8 +15,8 @@ const pool = new Pool({
 });
 
 // Handle pool errors
-pool.on('error', (err) => {
-  console.error('Unexpected database error:', err);
+pool.on("error", (err) => {
+  console.error("Unexpected database error:", err);
 });
 
 const connectDB = async () => {
@@ -26,7 +29,7 @@ const connectDB = async () => {
     await createTables();
   } catch (error) {
     console.error("❌ Database connection error:", error.message);
-    
+
     if (!process.env.DATABASE_URL) {
       console.error("💡 DATABASE_URL environment variable is not set");
     }
