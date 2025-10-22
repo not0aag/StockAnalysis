@@ -95,6 +95,33 @@ const addStock = async (req, res) => {
   const { symbol, quantity, purchasePrice, purchaseDate } = req.body;
 
   try {
+    // Validate inputs
+    if (!symbol || !quantity || !purchasePrice || !purchaseDate) {
+      return res.status(400).json({ 
+        error: "All fields are required" 
+      });
+    }
+
+    if (quantity <= 0) {
+      return res.status(400).json({ 
+        error: "Quantity must be greater than 0" 
+      });
+    }
+
+    if (purchasePrice <= 0) {
+      return res.status(400).json({ 
+        error: "Purchase price must be greater than 0" 
+      });
+    }
+
+    // Validate date
+    const date = new Date(purchaseDate);
+    if (isNaN(date.getTime()) || date > new Date()) {
+      return res.status(400).json({ 
+        error: "Invalid purchase date" 
+      });
+    }
+
     // Get stock info
     const stockData = await getStockPrice(symbol.toUpperCase());
 
@@ -124,10 +151,13 @@ const addStock = async (req, res) => {
       ]
     );
 
+    console.log(`✅ Stock added: ${stockData.symbol} x${quantity}`);
     res.status(201).json(transaction.rows[0]);
   } catch (error) {
-    console.error("Add stock error:", error);
-    res.status(500).json({ error: "Failed to add stock" });
+    console.error("Add stock error:", error.message);
+    res.status(500).json({ 
+      error: error.message || "Failed to add stock" 
+    });
   }
 };
 
@@ -136,6 +166,13 @@ const removeStock = async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Validate ID
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ 
+        error: "Invalid transaction ID" 
+      });
+    }
+
     // Check if transaction belongs to user
     const transaction = await pool.query(
       "SELECT * FROM transactions WHERE id = $1 AND user_id = $2",
@@ -143,16 +180,19 @@ const removeStock = async (req, res) => {
     );
 
     if (transaction.rows.length === 0) {
-      return res.status(404).json({ error: "Transaction not found" });
+      return res.status(404).json({ 
+        error: "Transaction not found or access denied" 
+      });
     }
 
     // Delete transaction
     await pool.query("DELETE FROM transactions WHERE id = $1", [id]);
 
+    console.log(`✅ Stock removed: Transaction ID ${id}`);
     res.json({ message: "Stock removed successfully" });
   } catch (error) {
-    console.error("Remove stock error:", error);
-    res.status(500).json({ error: "Server error" });
+    console.error("Remove stock error:", error.message);
+    res.status(500).json({ error: "Failed to remove stock" });
   }
 };
 

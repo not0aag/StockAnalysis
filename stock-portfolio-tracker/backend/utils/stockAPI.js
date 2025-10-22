@@ -1,28 +1,51 @@
 const yahooFinance = require("yahoo-finance2").default;
 
+// Cache for stock prices (helps reduce API calls)
+const priceCache = new Map();
+const CACHE_DURATION = 60000; // 1 minute
+
 // Get current stock price
 const getStockPrice = async (symbol) => {
   try {
-    const quote = await yahooFinance.quote(symbol);
-    return {
+    const upperSymbol = symbol.toUpperCase();
+    
+    // Check cache first
+    const cached = priceCache.get(upperSymbol);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached.data;
+    }
+
+    const quote = await yahooFinance.quote(upperSymbol);
+    
+    if (!quote || !quote.regularMarketPrice) {
+      throw new Error(`No price data available for ${upperSymbol}`);
+    }
+
+    const data = {
       symbol: quote.symbol,
-      companyName: quote.longName || quote.shortName,
+      companyName: quote.longName || quote.shortName || upperSymbol,
       currentPrice: quote.regularMarketPrice,
-      change: quote.regularMarketChange,
-      changePercent: quote.regularMarketChangePercent,
+      change: quote.regularMarketChange || 0,
+      changePercent: quote.regularMarketChangePercent || 0,
       previousClose: quote.regularMarketPreviousClose,
       marketCap: quote.marketCap,
       volume: quote.regularMarketVolume,
     };
+
+    // Cache the result
+    priceCache.set(upperSymbol, { data, timestamp: Date.now() });
+
+    return data;
   } catch (error) {
-    console.error(`Error fetching stock price for ${symbol}:`, error);
-    throw new Error("Failed to fetch stock price");
+    console.error(`❌ Error fetching stock price for ${symbol}:`, error.message);
+    throw new Error(`Unable to fetch stock data for ${symbol}`);
   }
 };
 
 // Get historical stock data
 const getHistoricalData = async (symbol, period = "1mo") => {
   try {
+    const upperSymbol = symbol.toUpperCase();
     const endDate = new Date();
     const startDate = new Date();
 
@@ -40,6 +63,9 @@ const getHistoricalData = async (symbol, period = "1mo") => {
       case "3mo":
         startDate.setMonth(endDate.getMonth() - 3);
         break;
+      case "6mo":
+        startDate.setMonth(endDate.getMonth() - 6);
+        break;
       case "1y":
         startDate.setFullYear(endDate.getFullYear() - 1);
         break;
@@ -47,41 +73,67 @@ const getHistoricalData = async (symbol, period = "1mo") => {
         startDate.setMonth(endDate.getMonth() - 1);
     }
 
-    const historical = await yahooFinance.historical(symbol, {
+    const historical = await yahooFinance.historical(upperSymbol, {
       period1: startDate,
       period2: endDate,
       interval: "1d",
     });
 
+    if (!historical || historical.length === 0) {
+      throw new Error(`No historical data available for ${upperSymbol}`);
+    }
+
     return historical.map((day) => ({
       date: day.date,
       close: day.close,
+      open: day.open,
+      high: day.high,
+      low: day.low,
       volume: day.volume,
     }));
   } catch (error) {
-    console.error(`Error fetching historical data for ${symbol}:`, error);
-    throw new Error("Failed to fetch historical data");
+    console.error(`❌ Error fetching historical data for ${symbol}:`, error.message);
+    throw new Error(`Unable to fetch historical data for ${symbol}`);
   }
 };
 
 // Search for stocks
 const searchStocks = async (query) => {
   try {
-    const results = await yahooFinance.search(query);
+    if (!query || query.trim().length === 0) {
+      return [];
+    }
+
+    const results = await yahooFinance.search(query.trim());
+    
+    if (!results || !results.quotes) {
+      return [];
+    }
+
     return results.quotes
-      .filter((quote) => quote.typeDisp === "Equity")
+      .filter((quote) => quote.typeDisp === "Equity" && quote.symbol)
       .slice(0, 10)
       .map((quote) => ({
         symbol: quote.symbol,
-        name: quote.longname || quote.shortname,
-        exchange: quote.exchange,
+        name: quote.longname || quote.shortname || quote.symbol,
+        exchange: quote.exchange || "N/A",
         type: quote.typeDisp,
       }));
   } catch (error) {
-    console.error("Error searching stocks:", error);
-    throw new Error("Failed to search stocks");
+    console.error("❌ Error searching stocks:", error.message);
+    throw new Error("Unable to search stocks");
   }
 };
+
+// Clear cache periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of priceCache.entries()) {
+    if (now - value.timestamp > CACHE_DURATION) {
+      priceCache.delete(key);
+    }
+  }
+}, CACHE_DURATION);
 
 module.exports = {
   getStockPrice,

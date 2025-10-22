@@ -1,52 +1,87 @@
 # Stock Portfolio Tracker
 
-A full-stack web app to track your stock holdings, view real-time quotes, and visualize portfolio performance.
+A modern, full-stack web application for tracking your stock portfolio with real-time quotes, performance analytics, and beautiful visualizations.
 
-## Overview
+## 🌟 Features
 
-- Users register, log in, and manage a portfolio of stock transactions.
-- Real-time quotes and historical data are fetched via yahoo-finance2 (no API key required).
-- Portfolio summary (current value, invested, gain/loss) and performance over time.
-- React frontend (Redux Toolkit + MUI) with a Node/Express API and PostgreSQL database.
+- **User Authentication** - Secure registration and login with JWT tokens
+- **Portfolio Management** - Add, track, and remove stock holdings
+- **Real-Time Data** - Live stock prices from Yahoo Finance (no API key needed)
+- **Performance Analytics** - Visualize portfolio performance over time
+- **Responsive Design** - Beautiful dark/light theme with Material-UI
+- **Cloud Ready** - Configured for Vercel deployment
 
-## Tech Stack
+## 🛠 Tech Stack
 
-- Backend: Node.js, Express, PostgreSQL (pg), JWT, bcrypt, yahoo-finance2
-- Frontend: React, Redux Toolkit, React Router, Material UI, Chart.js
+### Backend
+- **Runtime:** Node.js with Express
+- **Database:** PostgreSQL with connection pooling
+- **Authentication:** JWT with bcrypt password hashing
+- **Stock Data:** yahoo-finance2 API
+- **Security:** CORS, input validation, error handling
 
-## Monorepo Structure
+### Frontend
+- **Framework:** React 19
+- **State Management:** Redux Toolkit
+- **UI Library:** Material-UI (MUI)
+- **Routing:** React Router v7
+- **Charts:** Chart.js with react-chartjs-2
+- **HTTP Client:** Axios with interceptors
+
+## 📁 Project Structure
 
 ```
-backend/
-  server.js
-  routes/        # auth, portfolio, stocks
-  controllers/   # logic for each route
-  config/        # database pool + bootstrap
-  middleware/    # auth JWT middleware
-  utils/         # stock API wrappers
-frontend/
-  src/           # React app (Redux store, components, services)
+stock-portfolio-tracker/
+├── backend/
+│   ├── server.js              # Express app configuration
+│   ├── config/
+│   │   └── database.js        # PostgreSQL connection & schema
+│   ├── controllers/
+│   │   ├── authController.js  # Register, login, profile
+│   │   ├── portfolioController.js  # Portfolio CRUD operations
+│   │   └── stockController.js # Stock quotes & search
+│   ├── middleware/
+│   │   └── auth.js            # JWT authentication
+│   ├── routes/                # API route definitions
+│   └── utils/
+│       └── stockAPI.js        # Yahoo Finance integration
+├── frontend/
+│   ├── src/
+│   │   ├── components/        # React components
+│   │   ├── redux/             # Redux store & slices
+│   │   ├── services/          # API service
+│   │   ├── contexts/          # Theme context
+│   │   └── utils/             # Utility functions
+│   └── public/                # Static assets
+├── api/
+│   └── index.js               # Vercel serverless wrapper
+└── vercel.json                # Vercel deployment config
 ```
 
-## Prerequisites
+## 🚀 Quick Start
 
+### Prerequisites
 - Node.js 18+ and npm
-- PostgreSQL 13+ with a database you can connect to
+- PostgreSQL 13+
 
-## Quick Start (Local)
+### 1. Backend Setup
 
-1) Backend
+Create `backend/.env` file:
 
-- Create `backend/.env` from the example:
-
-```
-# backend/.env
-DATABASE_URL=postgres://user:password@localhost:5432/stockdb
-JWT_SECRET=your_long_random_secret
+```bash
+# Server Configuration
 PORT=5000
-```
+NODE_ENV=development
 
-- Install and start the API:
+# Database (update with your credentials)
+DATABASE_URL=postgresql://user:password@localhost:5432/stock_portfolio
+
+# JWT Secret (generate a random string)
+JWT_SECRET=your_super_secret_jwt_key_here
+
+# Frontend URL
+FRONTEND_URL=http://localhost:3000
+```
 
 ```
 cd backend

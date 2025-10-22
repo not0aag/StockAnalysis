@@ -2,37 +2,43 @@ const { Pool } = require("pg");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
+  ssl: process.env.NODE_ENV === "production" ? {
     rejectUnauthorized: false,
-  },
+  } : false,
   connectionTimeoutMillis: 10000,
   idleTimeoutMillis: 30000,
   max: 10,
+  min: 2,
+});
+
+// Handle pool errors
+pool.on('error', (err) => {
+  console.error('Unexpected database error:', err);
 });
 
 const connectDB = async () => {
   try {
     // Test the connection
     const client = await pool.connect();
-    console.log("PostgreSQL connected successfully");
+    console.log("✅ PostgreSQL connected successfully");
     client.release();
 
     await createTables();
   } catch (error) {
-    console.error("Database connection error:", error);
-    console.error(
-      "DATABASE_URL:",
-      process.env.DATABASE_URL ? "URL is set" : "URL not set"
-    );
-
-    // Try to give more helpful error info
-    if (error.code === "ECONNRESET") {
-      console.log(
-        "💡 This might be a network/SSL issue. Trying different SSL settings..."
-      );
+    console.error("❌ Database connection error:", error.message);
+    
+    if (!process.env.DATABASE_URL) {
+      console.error("💡 DATABASE_URL environment variable is not set");
     }
 
-    process.exit(1);
+    if (error.code === "ECONNRESET") {
+      console.log("💡 This might be a network/SSL issue");
+    }
+
+    // Don't exit in production serverless environment
+    if (process.env.NODE_ENV !== "production") {
+      process.exit(1);
+    }
   }
 };
 
