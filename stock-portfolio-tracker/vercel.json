@@ -2,9 +2,9 @@
     "version": 2,
     "buildCommand": "bash build.sh",
     "outputDirectory": "frontend/build",
-    "installCommand": "npm install --prefix backend",
+    "installCommand": "echo 'Dependencies managed per function'",
     "functions": {
-        "api/index.js": {
+        "api/**/*.js": {
             "memory": 1024,
             "maxDuration": 10
         }
@@ -12,7 +12,7 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/api/index.js"
+            "destination": "/api"
         }
     ]
 }
