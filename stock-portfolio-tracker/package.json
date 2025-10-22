@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "vercel-build": "cd frontend && npm install && npm run build",
+    "vercel-build": "cd frontend && npm install && npm run build && cd .. && echo 'Build complete'",
     "build": "cd frontend && npm install && npm run build",
     "start": "node backend/server.js"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }
