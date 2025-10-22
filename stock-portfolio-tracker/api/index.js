@@ -1,9 +1,5 @@
-// Load environment variables
-require("dotenv").config({
-  path: require("path").join(__dirname, "../backend/.env"),
-});
-
 // Vercel serverless function handler
+// Environment variables are loaded from Vercel's environment settings
 const app = require("../backend/server");
 
 // Export as serverless function
