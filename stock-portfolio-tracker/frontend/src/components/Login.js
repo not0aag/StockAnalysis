@@ -12,13 +12,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { login, clearError } from "../redux/authSlice";
-import { useTheme } from "../contexts/ThemeContext";
 import ThemeToggle from "./ThemeToggle";
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isDarkMode } = useTheme();
   const { isLoading, error, token } = useSelector((state) => state.auth);
   const {
     register,
