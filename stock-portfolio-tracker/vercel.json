@@ -2,10 +2,16 @@
     "version": 2,
     "buildCommand": "bash build.sh",
     "outputDirectory": "frontend/build",
-    "installCommand": "echo 'Skip root install'",
+    "installCommand": "npm install --prefix backend",
+    "functions": {
+        "api/index.js": {
+            "memory": 1024,
+            "maxDuration": 10
+        }
+    },
     "rewrites": [
         {
-            "source": "/api/:path*",
+            "source": "/api/(.*)",
             "destination": "/api/index.js"
         }
     ]
