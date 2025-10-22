@@ -1,12 +1,11 @@
 {
-  "name": "stock-portfolio-tracker",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "vercel-build": "npm --prefix frontend install && npm --prefix frontend run build",
-    "start": "node backend/server.js"
-  },
-  "engines": {
-    "node": ">=18.x"
-  }
+    "name": "stock-portfolio-tracker",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node backend/server.js"
+    },
+    "engines": {
+        "node": ">=18.x"
+    }
 }
